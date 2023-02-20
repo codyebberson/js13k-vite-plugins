@@ -155,9 +155,14 @@ export function googleClosurePlugin(
         return null;
       }
       return new Promise((resolve, reject) => {
+        const dir = path.resolve(options.dir as string);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+
         const timestamp = Date.now();
-        const inputFileName = path.resolve(options.dir as string, `closure-input-${timestamp}.js`);
-        const outputFileName = path.resolve(options.dir as string, `closure-output-${timestamp}.js`);
+        const inputFileName = path.resolve(dir, `closure-input-${timestamp}.js`);
+        const outputFileName = path.resolve(dir, `closure-output-${timestamp}.js`);
         fs.writeFileSync(inputFileName, code);
 
         const closureCompiler = new ClosureCompiler({
