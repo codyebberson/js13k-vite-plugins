@@ -3,7 +3,7 @@ import { execFileSync } from 'child_process';
 import CleanCSS from 'clean-css';
 import ect from 'ect-bin';
 import fs, { statSync } from 'fs';
-import glob from 'glob';
+import { glob } from 'glob';
 import type { CompileOptions } from 'google-closure-compiler';
 import googleClosure from 'google-closure-compiler';
 import htmlMinify from 'html-minifier-terser';
