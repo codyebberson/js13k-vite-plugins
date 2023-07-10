@@ -1,6 +1,6 @@
 # js13k-vite-plugins
 
-Collection of [Vite]() plugins and utilities for js13k entries.
+Collection of [Vite](https://vitejs.dev/) plugins and utilities for js13k games.
 
 ## Examples
 
@@ -17,44 +17,69 @@ import { defineConfig } from 'vite';
 export default defineConfig(js13kViteConfig());
 ```
 
+### Override specific settings
+
+Pass in options to configure specific plugins. In this example, we change the Google Closure Compiler level from default "ADVANCED" to "SIMPLE".
+
+```ts
+import { js13kViteConfig } from 'js13k-vite-plugins';
+import { defineConfig } from 'vite';
+
+export default defineConfig(
+  js13kViteConfig({
+    closureOptions: {
+      compilation_level: 'SIMPLE',
+    },
+  }),
+);
+```
+
 ### Use plugins individually
 
-Use the individual plugins for more control over the build
+Use the individual plugins for more control over the build.
 
 ```ts
 import {
   advzipPlugin,
   ectPlugin,
   googleClosurePlugin,
-  js13kViteBuildOptions,
+  getDefaultViteBuildOptions,
   roadrollerPlugin,
 } from 'js13k-vite-plugins';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  build: js13kViteBuildOptions(),
+  build: getDefaultViteBuildOptions(),
   plugins: [googleClosurePlugin(), roadrollerPlugin(), ectPlugin(), advzipPlugin()],
 });
 ```
 
-## Exports
+## Options
+
+The top level options is a collection of options for the various sub-plugins.
 
 ```ts
-/**
- * Returns the recommended Vite config for a JS13K game.
- *
- * Features:
- * - Uses recommended Vite build options
- * - Uses recommended Terser build options
- * - Adds Google Closure Compiler plugin
- * - Adds Roadroller plugin
- * - Adds ECT plugin
- * - Adds advzip plugin
- *
- * @returns The recommended Vite config for a JS13K game.
- */
-export declare function js13kViteConfig(): UserConfigExport;
+export interface JS13KOptions {
+  viteOptions?: BuildOptions;
+  terserOptions?: Terser.MinifyOptions;
+  rollupOptions?: RollupOptions;
+  closureOptions?: ExtendedClosureCompilerOptions;
+  htmlMinifyOptions?: HtmlMinifyOptions;
+  roadrollerOptions?: RoadrollerOptions;
+  ectOptions?: EctOptions;
+  advzipOptions?: AdvzipOptions;
+}
+```
 
+### Vite Options
+
+Base package: [`vite`](https://www.npmjs.com/package/vite)
+
+Full Vite documentation: <https://vitejs.dev/config/build-options.html>
+
+Default options:
+
+```ts
 /**
  * Returns recommended Vite build options for a JS13K game.
  *
@@ -68,8 +93,27 @@ export declare function js13kViteConfig(): UserConfigExport;
  *
  * @returns The recommended Vite build options.
  */
-export declare function js13kViteBuildOptions(): BuildOptions;
+export const defaultViteBuildOptions: BuildOptions = {
+  target: 'esnext',
+  minify: 'terser',
+  cssCodeSplit: false,
+  modulePreload: {
+    polyfill: false, // Don't add vite polyfills
+  },
+  terserOptions: defaultTerserOptions,
+  rollupOptions: defaultRollupOptions,
+};
+```
 
+### Terser Options
+
+Base package: [`terser`](https://www.npmjs.com/package/terser)
+
+Full Terser documentation: <https://terser.org/docs/options/>
+
+Default options:
+
+```ts
 /**
  * Returns recommended Terser options for a JS13K game.
  *
@@ -78,24 +122,40 @@ export declare function js13kViteBuildOptions(): BuildOptions;
  * - Enables all unsafe options
  * - Enables all passes
  * - Enables all mangles
- *
- * @returns The recommended Terser options.
  */
-export declare function js13kTerserOptions(): Terser.MinifyOptions;
+export const defaultTerserOptions: Terser.MinifyOptions = {
+  compress: {
+    ecma: 2020 as ECMA,
+    module: true,
+    passes: 3,
+    unsafe_arrows: true,
+    unsafe_comps: true,
+    unsafe_math: true,
+    unsafe_methods: true,
+    unsafe_proto: true,
+  },
+  mangle: {
+    module: true,
+    toplevel: true,
+  },
+  format: {
+    comments: false,
+    ecma: 2020 as ECMA,
+  },
+  module: true,
+  toplevel: true,
+};
+```
 
-/**
- * Returns recommended Google Closure Compiler options for a JS13K game.
- *
- * Features:
- * - Targets ESNext
- * - Minifies with Google Closure Compiler
- * - Uses "ADVANCED" compilation level
- * - Adds summary detail level
- *
- * @returns The recommended Google Closure options.
- */
-export declare function js13kGoogleClosureOptions(): CompileOptions;
+### Rollup Options
 
+Base package: [`rollup`](https://www.npmjs.com/package/rollup)
+
+Full Rollup documentation: <https://rollupjs.org/configuration-options/>
+
+Default options:
+
+```ts
 /**
  * Returns recommended Rollup options for a JS13K game.
  *
@@ -104,32 +164,164 @@ export declare function js13kGoogleClosureOptions(): CompileOptions;
  *
  * @returns The recommended Rollup options.
  */
-export declare function js13kRollupOptions(): RollupOptions;
+export const defaultRollupOptions: RollupOptions = {
+  output: {
+    inlineDynamicImports: true,
+    manualChunks: undefined,
+  },
+};
+```
 
-/**
- * Creates a Google Closure Compiler plugin to minify the JavaScript.
- * @param compilerOptions The options passed to the Google Closure Compiler.
- * @returns The closure compiler plugin.
- */
-export declare function googleClosurePlugin(compilerOptions?: ExtendedClosureCompilerOptions): Plugin;
+### Google Closure Compiler
 
-/**
- * Creates the Roadroller plugin that crunches the JS and CSS.
- * @returns The roadroller plugin.
- */
-export declare function roadrollerPlugin(): Plugin;
+Base package: [`google-closure-compiler`](https://www.npmjs.com/package/google-closure-compiler)
 
-/**
- * Creates the ECT plugin that uses Efficient-Compression-Tool to build a zip file.
- * @returns The ECT plugin.
- */
-export declare function ectPlugin(): Plugin;
+Full Google Closure Compiler documentation: <https://github.com/google/closure-compiler/wiki/Flags-and-Options>
 
+Default options:
+
+```ts
 /**
- * Creates the advzip plugin that uses AdvanceCOMP to optimize the zip file.
- * @returns The advzip plugin.
+ * Returns recommended Google Closure Compiler options for a JS13K game.
+ *
+ * Features:
+ * - Targets ESNext
+ * - Minifies with Google Closure Compiler
+ * - Uses "ADVANCED" compilation level
+ * - Adds summary detail level
  */
-export declare function advzipPlugin(): Plugin;
+export const defaultGoogleClosureOptions: ExtendedClosureCompilerOptions = {
+  language_in: 'ECMASCRIPT_NEXT',
+  language_out: 'ECMASCRIPT_NEXT',
+  compilation_level: 'ADVANCED', // WHITESPACE_ONLY, SIMPLE, ADVANCED
+  strict_mode_input: true,
+  jscomp_off: '*',
+  summary_detail_level: '3',
+};
+```
+
+### HTML Minify Options
+
+Base package: [`html-minifier-terser`](https://www.npmjs.com/package/html-minifier-terser)
+
+Full HTML Minify documentation: https://github.com/terser/html-minifier-terser
+
+Default options:
+
+```ts
+export const defaultHtmlMinifyOptions: HtmlMinifyOptions = {
+  includeAutoGeneratedTags: true,
+  removeAttributeQuotes: true,
+  removeComments: true,
+  removeRedundantAttributes: true,
+  removeScriptTypeAttributes: true,
+  removeStyleLinkTypeAttributes: true,
+  sortClassName: true,
+  useShortDoctype: true,
+  collapseWhitespace: true,
+  collapseInlineTagWhitespace: true,
+  removeEmptyAttributes: true,
+  removeOptionalTags: true,
+  sortAttributes: true,
+};
+```
+
+### Roadroller Options
+
+Base package: [`roadroller`](https://www.npmjs.com/package/roadroller)
+
+Full Roadroller documentation: <https://lifthrasiir.github.io/roadroller/>
+
+This plugin uses the Roadroller defaults.
+
+### ECT Options
+
+Base package: [`ect-bin`](https://www.npmjs.com/package/ect-bin)
+
+ECT documentation: <https://github.com/fhanau/Efficient-Compression-Tool/blob/master/doc/Manual.docx> ([Google Docs](https://docs.google.com/document/d/10vbsA4BqKdkGFH9_E1bQVhyX7EWbHKcW/edit?usp=sharing&ouid=108398230704423301333&rtpof=true&sd=true))
+
+```ts
+export interface EctOptions {
+  /**
+   * Show no report when program is finished; print only warnings and errors.
+   */
+  quiet?: boolean;
+
+  /**
+   * Select compression level [1-9] (ECT default: 3, JS13k default: 10009).
+   *
+   * For detailed information on performance read Performance.html.
+   *
+   * Advanced usage:
+   * A different syntax may be used to achieve even more compression for deflate compression
+   * if time (and efficiency) is not a concern.
+   * If the value is above 10000, the blocksplitting-compression cycle is repeated # / 10000 times.
+   * If # % 10000 is above 9, level 9 is used and the number of iterations of deflate compression
+   * per block is set to # % 10000. If # % 10000 is 9 or below, this number specifies the level.
+   */
+  level?: number;
+
+  /**
+   * Discard metadata. (default true).
+   */
+  strip?: boolean;
+
+  /**
+   * Keep the file modification time. (default false).
+   */
+  keep?: boolean;
+
+  /**
+   * Enable strict losslessness. Without this, image data under fully transparent pixels can be
+   * modified to increase compression. This data is normally invisible and not needed.
+   * However, you may want to use this option if you are still going to edit the image.
+   *
+   * Also preserves rarely used GZIP metadata.
+   *
+   * (default false).
+   */
+  strict?: boolean;
+}
+```
+
+Default options:
+
+```ts
+/**
+ * Default Efficient Compression Tool (ECT) options.
+ *
+ * Level 10009 is the recommended value for JS13k games. This will be slow but will produce the smallest file size.
+ *
+ * Strip is true by default because metadata is not needed for JS13k games.
+ */
+export const defaultEctOptions: EctOptions = {
+  level: 10009,
+  strip: true,
+};
+```
+
+### AdvZIP Options
+
+Base package: [`advzip-bin`](https://www.npmjs.com/package/advzip-bin)
+
+Full AdvZIP documentation:
+
+TypeScript interface:
+
+```ts
+export interface AdvzipOptions {
+  recompress?: boolean;
+  shrinkExtra?: boolean;
+}
+```
+
+Default options:
+
+```ts
+export const defaultAdvzipOptions: AdvzipOptions = {
+  recompress: true,
+  shrinkExtra: true,
+};
 ```
 
 ## License
