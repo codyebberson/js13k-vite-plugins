@@ -1,6 +1,6 @@
 # js13k-vite-plugins
 
-Collection of [Vite](https://vitejs.dev/) plugins and utilities for js13k games.
+Collection of [Vite](https://vitejs.dev/) plugins and utilities for [js13k games](https://js13kgames.com/).
 
 ## Examples
 
