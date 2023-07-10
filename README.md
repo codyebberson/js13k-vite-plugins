@@ -300,18 +300,18 @@ export const defaultEctOptions: EctOptions = {
 };
 ```
 
-### AdvZIP Options
+### Advzip Options
 
 Base package: [`advzip-bin`](https://www.npmjs.com/package/advzip-bin)
 
-Full AdvZIP documentation:
+Full Advzip documentation: <https://linux.die.net/man/1/advzip>
 
 TypeScript interface:
 
 ```ts
 export interface AdvzipOptions {
-  recompress?: boolean;
-  shrinkExtra?: boolean;
+  pedantic?: boolean;
+  shrinkLevel?: 0 | 1 | 2 | 3 | 4 | 'store' | 'fast' | 'normal' | 'extra' | 'insane';
 }
 ```
 
@@ -319,8 +319,7 @@ Default options:
 
 ```ts
 export const defaultAdvzipOptions: AdvzipOptions = {
-  recompress: true,
-  shrinkExtra: true,
+  shrinkLevel: 'insane',
 };
 ```
 

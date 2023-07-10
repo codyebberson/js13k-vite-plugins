@@ -1,10 +1,16 @@
 import { RollupOptions } from 'rollup';
 import { ECMA } from 'terser';
 import { BuildOptions, Terser, UserConfigExport } from 'vite';
-import { AdvzipOptions, advzipPlugin } from './advzip';
-import { ExtendedClosureCompilerOptions, googleClosurePlugin } from './closure';
-import { EctOptions, ectPlugin } from './ect';
-import { HtmlMinifyOptions, RoadrollerOptions, roadrollerPlugin } from './roadroller';
+import { AdvzipOptions, advzipPlugin, defaultAdvzipOptions } from './advzip';
+import { defaultGoogleClosureOptions, ExtendedClosureCompilerOptions, googleClosurePlugin } from './closure';
+import { defaultEctOptions, EctOptions, ectPlugin } from './ect';
+import {
+  defaultHtmlMinifyOptions,
+  defaultRoadrollerOptions,
+  HtmlMinifyOptions,
+  RoadrollerOptions,
+  roadrollerPlugin,
+} from './roadroller';
 import { addDefaultValues } from './utils';
 
 export type {
@@ -16,7 +22,17 @@ export type {
   RollupOptions,
 };
 
-export { advzipPlugin, ectPlugin, googleClosurePlugin, roadrollerPlugin };
+export {
+  advzipPlugin,
+  defaultAdvzipOptions,
+  defaultEctOptions,
+  defaultGoogleClosureOptions,
+  defaultHtmlMinifyOptions,
+  defaultRoadrollerOptions,
+  ectPlugin,
+  googleClosurePlugin,
+  roadrollerPlugin,
+};
 
 export interface JS13KOptions {
   viteOptions?: BuildOptions;

@@ -5,13 +5,12 @@ import { Plugin } from 'vite';
 import { addDefaultValues } from './utils';
 
 export interface AdvzipOptions {
-  recompress?: boolean;
-  shrinkExtra?: boolean;
+  pedantic?: boolean;
+  shrinkLevel?: 0 | 1 | 2 | 3 | 4 | 'store' | 'fast' | 'normal' | 'extra' | 'insane';
 }
 
 export const defaultAdvzipOptions: AdvzipOptions = {
-  recompress: true,
-  shrinkExtra: true,
+  shrinkLevel: 'insane',
 };
 
 /**
@@ -24,12 +23,16 @@ export function advzipPlugin(options?: AdvzipOptions): Plugin {
     name: 'vite:advzip',
     writeBundle: async (): Promise<void> => {
       try {
-        const args = [];
-        if (advzipOptions.recompress) {
-          args.push('--recompress');
+        const args = ['--recompress'];
+        if (advzipOptions.pedantic) {
+          args.push('--pedantic');
         }
-        if (advzipOptions.shrinkExtra) {
-          args.push('--shrink-extra');
+        if (advzipOptions.shrinkLevel !== undefined) {
+          if (typeof advzipOptions.shrinkLevel === 'number') {
+            args.push(`-${advzipOptions.shrinkLevel}`);
+          } else {
+            args.push(`--shrink-${advzipOptions.shrinkLevel}`);
+          }
         }
         args.push('dist/index.zip');
         const result = execFileSync(advzip, args);
