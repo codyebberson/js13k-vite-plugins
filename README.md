@@ -11,6 +11,8 @@ Example `vite.config.ts` files
 Use `js13kViteConfig()` for a quick and easy default configuration.
 
 ```ts
+// vite.config.ts
+
 import { js13kViteConfig } from 'js13k-vite-plugins';
 import { defineConfig } from 'vite';
 
@@ -19,9 +21,13 @@ export default defineConfig(js13kViteConfig());
 
 ### Override specific settings
 
-Pass in options to configure specific plugins. In this example, we change the Google Closure Compiler level from default "ADVANCED" to "SIMPLE".
+Pass in options to configure specific plugins.
+
+For example, change the Google Closure Compiler level to "SIMPLE" (from default "ADVANCED").
 
 ```ts
+// vite.config.ts
+
 import { js13kViteConfig } from 'js13k-vite-plugins';
 import { defineConfig } from 'vite';
 
@@ -39,6 +45,8 @@ export default defineConfig(
 Use the individual plugins for more control over the build.
 
 ```ts
+// vite.config.ts
+
 import {
   advzipPlugin,
   ectPlugin,
