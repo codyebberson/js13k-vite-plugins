@@ -1,6 +1,6 @@
 {
   "name": "js13k-vite-plugins",
-  "version": "0.0.5",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "build": "tsc && node esbuild.mjs"
