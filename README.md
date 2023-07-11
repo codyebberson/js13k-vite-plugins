@@ -186,6 +186,8 @@ Base package: [`google-closure-compiler`](https://www.npmjs.com/package/google-c
 
 Full Google Closure Compiler documentation: <https://github.com/google/closure-compiler/wiki/Flags-and-Options>
 
+In addition to the standard Google Closure Compiler options, you can pass in `preserveOutput: true` to keep the intermediate temp files. This can be extremely valuable when debugging.
+
 Default options:
 
 ```ts

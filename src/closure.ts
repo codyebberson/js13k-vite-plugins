@@ -34,7 +34,7 @@ export const defaultGoogleClosureOptions: ExtendedClosureCompilerOptions = {
  * @returns The closure compiler plugin.
  */
 export function googleClosurePlugin(options?: ExtendedClosureCompilerOptions): Plugin {
-  const compilerOptions = addDefaultValues(options, defaultGoogleClosureOptions);
+  const { preserveOutput, ...compilerOptions } = addDefaultValues(options, defaultGoogleClosureOptions);
   return {
     name: 'closure-compiler',
     renderChunk: (code: string, chunk: RenderedChunk, options: OutputOptions) => {
@@ -63,7 +63,7 @@ export function googleClosurePlugin(options?: ExtendedClosureCompilerOptions): P
         closureCompiler.run((exitCode, _stdOut, stdErr) => {
           if (exitCode === 0) {
             const result = { code: fs.readFileSync(outputFileName, 'utf8') };
-            if (!compilerOptions.preserveOutput) {
+            if (!preserveOutput) {
               fs.unlinkSync(inputFileName);
               fs.unlinkSync(outputFileName);
             }
