@@ -2,7 +2,9 @@
 
 Collection of [Vite](https://vitejs.dev/) plugins and utilities for [js13k games](https://js13kgames.com/).
 
-## Examples
+Example project: <https://github.com/codyebberson/js13k-starter-2023>
+
+## Example configurations
 
 Example `vite.config.ts` files
 
