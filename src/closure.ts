@@ -1,5 +1,4 @@
 import fs from 'fs';
-import type { CompileOptions } from 'google-closure-compiler';
 import googleClosure from 'google-closure-compiler';
 import path from 'path';
 import { OutputOptions, RenderedChunk } from 'rollup';
@@ -8,6 +7,8 @@ import { addDefaultValues } from './utils';
 
 const { compiler: ClosureCompiler } = googleClosure;
 
+export type CompileOption = string | boolean;
+export type CompileOptions = { [key: string]: CompileOption | CompileOption[] };
 export type ExtendedClosureCompilerOptions = CompileOptions & { preserveOutput?: boolean };
 
 /**
@@ -33,8 +34,7 @@ export const defaultGoogleClosureOptions: ExtendedClosureCompilerOptions = {
  * @param compilerOptions The options passed to the Google Closure Compiler.
  * @returns The closure compiler plugin.
  */
-export function googleClosurePlugin(options?: ExtendedClosureCompilerOptions): Plugin {
-  const { preserveOutput, ...compilerOptions } = addDefaultValues(options, defaultGoogleClosureOptions);
+export function googleClosurePlugin(compilerOptions?: ExtendedClosureCompilerOptions): Plugin {
   return {
     name: 'closure-compiler',
     renderChunk: (code: string, chunk: RenderedChunk, options: OutputOptions) => {
@@ -43,36 +43,80 @@ export function googleClosurePlugin(options?: ExtendedClosureCompilerOptions): P
         // Returning null will apply no transformations.
         return null;
       }
-      return new Promise((resolve, reject) => {
-        const dir = path.resolve(options.dir as string);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-
-        const timestamp = Date.now();
-        const inputFileName = path.resolve(dir, `closure-input-${timestamp}.js`);
-        const outputFileName = path.resolve(dir, `closure-output-${timestamp}.js`);
-        fs.writeFileSync(inputFileName, code);
-
-        const closureCompiler = new ClosureCompiler({
-          ...compilerOptions,
-          js: inputFileName,
-          js_output_file: outputFileName,
-        });
-
-        closureCompiler.run((exitCode, _stdOut, stdErr) => {
-          if (exitCode === 0) {
-            const result = { code: fs.readFileSync(outputFileName, 'utf8') };
-            if (!preserveOutput) {
-              fs.unlinkSync(inputFileName);
-              fs.unlinkSync(outputFileName);
-            }
-            resolve(result);
-          } else {
-            reject(stdErr);
-          }
-        });
-      });
+      return googleClosureImpl(code, options, compilerOptions);
     },
   };
+}
+
+async function googleClosureImpl(
+  code: string,
+  options: OutputOptions,
+  googleClosureOptions?: ExtendedClosureCompilerOptions,
+): Promise<{ code: string }> {
+  const { preserveOutput, ...compilerOptions } = addDefaultValues(googleClosureOptions, defaultGoogleClosureOptions);
+
+  const dir = path.resolve(options.dir as string);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
+  const timestamp = Date.now();
+  const inputFileName = path.resolve(dir, `closure-input-${timestamp}.js`);
+  const outputFileName = path.resolve(dir, `closure-output-${timestamp}.js`);
+  fs.writeFileSync(inputFileName, code);
+
+  const closureCompiler = new ClosureCompiler({
+    ...compilerOptions,
+    js: inputFileName,
+    js_output_file: outputFileName,
+  });
+
+  const nativePath = await getNativeImagePath();
+  if (nativePath) {
+    (closureCompiler as any).JAR_PATH = null;
+    closureCompiler.javaPath = nativePath;
+  }
+
+  return new Promise((resolve, reject) => {
+    closureCompiler.run((exitCode, _stdOut, stdErr) => {
+      if (exitCode === 0) {
+        const result = { code: fs.readFileSync(outputFileName, 'utf8') };
+        if (!preserveOutput) {
+          fs.unlinkSync(inputFileName);
+          fs.unlinkSync(outputFileName);
+        }
+        resolve(result);
+      } else {
+        reject(stdErr);
+      }
+    });
+  });
+}
+
+//
+// Closure Compiler Platform
+// Utility methods for determining the platform to use.
+// These can be found in node_modules/google-closure-compiler/lib/utils.js
+// Unfortunately, they are not exported, so we have to copy them here.
+//
+
+async function tryGetNativeImagePath(packageName: string): Promise<string | undefined> {
+  try {
+    // @ts-ignore
+    return (await import(packageName))?.default;
+  } catch (e) {}
+  return undefined;
+}
+
+async function getNativeImagePath(): Promise<string | undefined> {
+  if (process.platform === 'darwin') {
+    return tryGetNativeImagePath('google-closure-compiler-osx');
+  }
+  if (process.platform === 'win32') {
+    return tryGetNativeImagePath('google-closure-compiler-windows');
+  }
+  if (process.platform === 'linux' && ['x64', 'x32'].includes(process.arch)) {
+    return tryGetNativeImagePath('google-closure-compiler-linux');
+  }
+  return undefined;
 }
