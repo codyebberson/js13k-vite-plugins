@@ -4,6 +4,22 @@ Collection of [Vite](https://vitejs.dev/) plugins and utilities for [js13k games
 
 Example project: <https://github.com/codyebberson/js13k-starter-2023>
 
+## Getting Started
+
+First, setup a new Vite project: <https://vitejs.dev/guide/#scaffolding-your-first-vite-project>
+
+```bash
+npm create vite@latest
+```
+
+Next, add `js13k-vite-plugins`:
+
+```bash
+npm install --save-dev js13k-vite-plugins
+```
+
+Then update your Vite configuration as needed. See below for example Vite configurations.
+
 ## Example configurations
 
 Example `vite.config.ts` files
@@ -19,6 +35,29 @@ import { js13kViteConfig } from 'js13k-vite-plugins';
 import { defineConfig } from 'vite';
 
 export default defineConfig(js13kViteConfig());
+```
+
+### Disable plugins
+
+Some plugins can be disabled individually by passing `false` for the options.
+
+- Disable Google closure by passing `closureOptions: false`
+- Disable Roadroller by passing `roadrollerOptions: false`
+- Disable Advzip by passing `advzipOptions: false`
+
+For example, disable Google Closure Compiler:
+
+```ts
+// vite.config.ts
+
+import { js13kViteConfig } from 'js13k-vite-plugins';
+import { defineConfig } from 'vite';
+
+export default defineConfig(
+  js13kViteConfig({
+    closureOptions: false,
+  }),
+);
 ```
 
 ### Override specific settings

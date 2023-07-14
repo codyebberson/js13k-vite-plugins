@@ -38,11 +38,11 @@ export interface JS13KOptions {
   viteOptions?: BuildOptions;
   terserOptions?: Terser.MinifyOptions;
   rollupOptions?: RollupOptions;
-  closureOptions?: ExtendedClosureCompilerOptions;
+  closureOptions?: ExtendedClosureCompilerOptions | false;
   htmlMinifyOptions?: HtmlMinifyOptions;
-  roadrollerOptions?: RoadrollerOptions;
+  roadrollerOptions?: RoadrollerOptions | false;
   ectOptions?: EctOptions;
-  advzipOptions?: AdvzipOptions;
+  advzipOptions?: AdvzipOptions | false;
 }
 
 /**
@@ -108,6 +108,7 @@ export const defaultRollupOptions: RollupOptions = {
 export const defaultViteBuildOptions: BuildOptions = {
   target: 'esnext',
   minify: 'terser',
+  assetsDir: '',
   cssCodeSplit: false,
   modulePreload: {
     polyfill: false, // Don't add vite polyfills
@@ -130,6 +131,22 @@ export const defaultViteBuildOptions: BuildOptions = {
  * @returns The recommended Vite config for a JS13K game.
  */
 export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
+  const plugins = [];
+
+  if (options?.closureOptions !== false) {
+    plugins.push(googleClosurePlugin(options?.closureOptions));
+  }
+
+  if (options?.roadrollerOptions !== false) {
+    plugins.push(roadrollerPlugin(options?.roadrollerOptions, options?.htmlMinifyOptions));
+  }
+
+  plugins.push(ectPlugin(options?.ectOptions));
+
+  if (options?.advzipOptions !== false) {
+    plugins.push(advzipPlugin(options?.advzipOptions));
+  }
+
   return {
     build: addDefaultValues(
       {
@@ -139,11 +156,6 @@ export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
       },
       defaultViteBuildOptions,
     ),
-    plugins: [
-      googleClosurePlugin(options?.closureOptions),
-      roadrollerPlugin(options?.roadrollerOptions, options?.htmlMinifyOptions),
-      ectPlugin(options?.ectOptions),
-      advzipPlugin(options?.advzipOptions),
-    ],
+    plugins,
   };
 }
