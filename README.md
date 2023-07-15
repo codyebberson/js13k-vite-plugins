@@ -374,6 +374,14 @@ export const defaultAdvzipOptions: AdvzipOptions = {
 };
 ```
 
+## Acknowledgements
+
+[Kang Seonghoon](https://mearie.org/) for [Roadroller](https://lifthrasiir.github.io/roadroller/)
+
+[Rob Louie](https://github.com/roblouie) for Roadroller configuration recommendations
+
+[Salvatore Previti](https://github.com/SalvatorePreviti) for Terser configuration recommendations
+
 ## License
 
 MIT

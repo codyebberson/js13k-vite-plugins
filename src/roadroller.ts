@@ -29,6 +29,10 @@ export const defaultHtmlMinifyOptions: HtmlMinifyOptions = {
 
 /**
  * Creates the Roadroller plugin that crunches the JS and CSS.
+ *
+ * Based on Rob Louie's recommendations:
+ * See: https://github.com/codyebberson/js13k-starter-2022/pull/1
+ *
  * @returns The roadroller plugin.
  */
 export function roadrollerPlugin(roadrollerOptions?: RoadrollerOptions, htmlMinifyOptions?: HtmlMinifyOptions): Plugin {
