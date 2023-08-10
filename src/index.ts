@@ -490,7 +490,7 @@ export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
         terserOptions: options?.terserOptions,
         rollupOptions: options?.rollupOptions,
       },
-      defaultViteBuildOptions,
+      defaultViteBuildOptions
     ),
     plugins,
   };

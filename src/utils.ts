@@ -19,9 +19,12 @@ export function addDefaultValues<T extends Record<string, any>>(a: T | undefined
   if (!a) {
     return b;
   }
-  // https://stackoverflow.com/a/63463130/2051724
   for (const [k, v] of Object.entries(b) as [keyof T, any][]) {
-    a[k] = isObject(v) ? addDefaultValues(a[k] ?? {}, v) : v;
+    if (a[k] === undefined) {
+      a[k] = v;
+    } else if (isObject(v) && isObject(a[k])) {
+      a[k] = addDefaultValues(a[k], v);
+    }
   }
   return a;
 }
