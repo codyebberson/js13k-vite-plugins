@@ -41,11 +41,10 @@ export default defineConfig(js13kViteConfig());
 
 Some plugins can be disabled individually by passing `false` for the options.
 
-- Disable Google closure by passing `closureOptions: false`
 - Disable Roadroller by passing `roadrollerOptions: false`
 - Disable Advzip by passing `advzipOptions: false`
 
-For example, disable Google Closure Compiler:
+For example, disable Roadroller:
 
 ```ts
 // vite.config.ts
@@ -55,8 +54,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(
   js13kViteConfig({
-    closureOptions: false,
-  }),
+    roadrollerOptions: false,
+  })
 );
 ```
 
@@ -64,7 +63,7 @@ export default defineConfig(
 
 Pass in options to configure specific plugins.
 
-For example, change the Google Closure Compiler level to "SIMPLE" (from default "ADVANCED").
+For example, change the Advzip shrink level to "fast" (from default "insane").
 
 ```ts
 // vite.config.ts
@@ -74,10 +73,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(
   js13kViteConfig({
-    closureOptions: {
-      compilation_level: 'SIMPLE',
+    advzipOptions: {
+      shrinkLevel: 'fast',
     },
-  }),
+  })
 );
 ```
 
@@ -88,18 +87,12 @@ Use the individual plugins for more control over the build.
 ```ts
 // vite.config.ts
 
-import {
-  advzipPlugin,
-  ectPlugin,
-  googleClosurePlugin,
-  getDefaultViteBuildOptions,
-  roadrollerPlugin,
-} from 'js13k-vite-plugins';
+import { advzipPlugin, ectPlugin, getDefaultViteBuildOptions, roadrollerPlugin } from 'js13k-vite-plugins';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
   build: getDefaultViteBuildOptions(),
-  plugins: [googleClosurePlugin(), roadrollerPlugin(), ectPlugin(), advzipPlugin()],
+  plugins: [roadrollerPlugin(), ectPlugin(), advzipPlugin()],
 });
 ```
 
@@ -112,7 +105,6 @@ export interface JS13KOptions {
   viteOptions?: BuildOptions;
   terserOptions?: Terser.MinifyOptions;
   rollupOptions?: RollupOptions;
-  closureOptions?: ExtendedClosureCompilerOptions;
   htmlMinifyOptions?: HtmlMinifyOptions;
   roadrollerOptions?: RoadrollerOptions;
   ectOptions?: EctOptions;
@@ -218,36 +210,6 @@ export const defaultRollupOptions: RollupOptions = {
     inlineDynamicImports: true,
     manualChunks: undefined,
   },
-};
-```
-
-### Google Closure Compiler
-
-Base package: [`google-closure-compiler`](https://www.npmjs.com/package/google-closure-compiler)
-
-Full Google Closure Compiler documentation: <https://github.com/google/closure-compiler/wiki/Flags-and-Options>
-
-In addition to the standard Google Closure Compiler options, you can pass in `preserveOutput: true` to keep the intermediate temp files. This can be extremely valuable when debugging.
-
-Default options:
-
-```ts
-/**
- * Returns recommended Google Closure Compiler options for a JS13K game.
- *
- * Features:
- * - Targets ESNext
- * - Minifies with Google Closure Compiler
- * - Uses "ADVANCED" compilation level
- * - Adds summary detail level
- */
-export const defaultGoogleClosureOptions: ExtendedClosureCompilerOptions = {
-  language_in: 'ECMASCRIPT_NEXT',
-  language_out: 'ECMASCRIPT_NEXT',
-  compilation_level: 'ADVANCED', // WHITESPACE_ONLY, SIMPLE, ADVANCED
-  strict_mode_input: true,
-  jscomp_off: '*',
-  summary_detail_level: '3',
 };
 ```
 
