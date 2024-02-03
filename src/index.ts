@@ -2,35 +2,25 @@ import { RollupOptions } from 'rollup';
 import { ECMA } from 'terser';
 import { BuildOptions, Terser, UserConfigExport } from 'vite';
 import { AdvzipOptions, advzipPlugin, defaultAdvzipOptions } from './advzip';
-import { defaultGoogleClosureOptions, ExtendedClosureCompilerOptions, googleClosurePlugin } from './closure';
-import { defaultEctOptions, EctOptions, ectPlugin } from './ect';
+import { EctOptions, defaultEctOptions, ectPlugin } from './ect';
 import {
-  defaultHtmlMinifyOptions,
-  defaultRoadrollerOptions,
   HtmlMinifyOptions,
   RoadrollerOptions,
+  defaultHtmlMinifyOptions,
+  defaultRoadrollerOptions,
   roadrollerPlugin,
 } from './roadroller';
 import { addDefaultValues } from './utils';
 
-export type {
-  AdvzipOptions,
-  EctOptions,
-  ExtendedClosureCompilerOptions,
-  HtmlMinifyOptions,
-  RoadrollerOptions,
-  RollupOptions,
-};
+export type { AdvzipOptions, EctOptions, HtmlMinifyOptions, RoadrollerOptions, RollupOptions };
 
 export {
   advzipPlugin,
   defaultAdvzipOptions,
   defaultEctOptions,
-  defaultGoogleClosureOptions,
   defaultHtmlMinifyOptions,
   defaultRoadrollerOptions,
   ectPlugin,
-  googleClosurePlugin,
   roadrollerPlugin,
 };
 
@@ -38,7 +28,6 @@ export interface JS13KOptions {
   viteOptions?: BuildOptions;
   terserOptions?: Terser.MinifyOptions;
   rollupOptions?: RollupOptions;
-  closureOptions?: ExtendedClosureCompilerOptions | false;
   htmlMinifyOptions?: HtmlMinifyOptions;
   roadrollerOptions?: RoadrollerOptions | false;
   ectOptions?: EctOptions;
@@ -468,10 +457,6 @@ export const defaultViteBuildOptions: BuildOptions = {
  */
 export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
   const plugins = [];
-
-  if (options?.closureOptions !== false) {
-    plugins.push(googleClosurePlugin(options?.closureOptions));
-  }
 
   if (options?.roadrollerOptions !== false) {
     plugins.push(roadrollerPlugin(options?.roadrollerOptions, options?.htmlMinifyOptions));

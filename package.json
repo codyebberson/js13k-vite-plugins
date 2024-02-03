@@ -17,7 +17,6 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "advzip-bin": "^2.0.0",
     "clean-css": "^5.3.3",
-    "google-closure-compiler": "^20230802.0.0",
     "ect-bin": "^1.4.1",
     "glob": "^10.3.10",
     "html-minifier-terser": "^7.2.0",
@@ -31,7 +30,6 @@
   "devDependencies": {
     "@types/clean-css": "4.2.11",
     "@types/glob": "8.1.0",
-    "@types/google-closure-compiler": "0.0.22",
     "@types/html-minifier-terser": "7.0.2",
     "@typescript-eslint/eslint-plugin": "6.20.0",
     "@typescript-eslint/parser": "6.20.0",
@@ -49,7 +47,8 @@
   },
   "prettier": {
     "printWidth": 120,
-    "singleQuote": true
+    "singleQuote": true,
+    "trailingComma": "es5"
   },
   "eslintConfig": {
     "root": true,

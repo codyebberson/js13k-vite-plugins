@@ -41,8 +41,7 @@ export function roadrollerPlugin(roadrollerOptions?: RoadrollerOptions, htmlMini
   return {
     name: 'vite:roadroller',
     transformIndexHtml: {
-      enforce: 'post',
-      transform: async (html: string, ctx?: IndexHtmlTransformContext): Promise<string> => {
+      handler: async (html: string, ctx?: IndexHtmlTransformContext): Promise<string> => {
         // Only use this plugin during build
         if (!ctx || !ctx.bundle) {
           return html;
