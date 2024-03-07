@@ -33,6 +33,26 @@ Example project: <https://github.com/codyebberson/js13k-starter>
 
 ## Getting Started
 
+### From Template
+
+Go to the [js13k-starter](https://github.com/codyebberson/js13k-starter) repository and click "Use this template" to create a new repository with the same files and folders as the template.
+
+Clone the new repository and install the dependencies:
+
+```bash
+git clone git@github.com:your-username/js13k-starter.git
+cd js13k-starter
+npm install
+```
+
+Then run the development server:
+
+```bash
+npm run dev
+```
+
+### From Scratch
+
 First, setup a new Vite project: <https://vitejs.dev/guide/#scaffolding-your-first-vite-project>
 
 ```bash
