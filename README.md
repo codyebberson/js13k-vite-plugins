@@ -2,7 +2,34 @@
 
 Collection of [Vite](https://vitejs.dev/) plugins and utilities for [js13k games](https://js13kgames.com/).
 
-Example project: <https://github.com/codyebberson/js13k-starter-2023>
+Included tools:
+
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/) dev server
+- [Rollup](https://rollupjs.org/guide/en/) production build
+- [Roadroller](https://lifthrasiir.github.io/roadroller/) - best JS compressor
+- [Efficient Compression Tool](https://github.com/fhanau/Efficient-Compression-Tool) - best ZIP
+- [Advzip](https://github.com/amadvance/advancecomp) - post-processing ZIP compression
+
+Example project: <https://github.com/codyebberson/js13k-starter>
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Example Configurations](#ground-rules)
+  - [Use All Recommendations](#use-all-recommendations)
+  - [Disalbe Plugins](#disable-plugins)
+  - [Override Specific Settings](#override-specific-settings)
+  - [Use Plugins Individually](#use-plugins-individually)
+- [Options](#options)
+  - [Vite Options](#vite-options)
+  - [Terser Options](#terser-options)
+  - [Rollup Options](#rollup-options)
+  - [HTML Minify Options](#html-minify-options)
+  - [Roadroller Options](#roadroller-options)
+  - [ECT Options](#ect-options)
+  - [Advzip Options](#advzip-options)
+- [Acknowledgements](#acknowledgements)
 
 ## Getting Started
 
@@ -20,24 +47,24 @@ npm install --save-dev js13k-vite-plugins
 
 Then update your Vite configuration as needed. See below for example Vite configurations.
 
-## Example configurations
+## Example Configurations
 
 Example `vite.config.ts` files
 
-### Use all recommendations
+### Use All Recommendations
 
-Use `js13kViteConfig()` for a quick and easy default configuration.
+Use `js13kViteConfig()` for a quick and easy default configuration (recommended).
 
 ```ts
 // vite.config.ts
 
-import { js13kViteConfig } from 'js13k-vite-plugins';
-import { defineConfig } from 'vite';
+import { js13kViteConfig } from "js13k-vite-plugins";
+import { defineConfig } from "vite";
 
 export default defineConfig(js13kViteConfig());
 ```
 
-### Disable plugins
+### Disable Plugins
 
 Some plugins can be disabled individually by passing `false` for the options.
 
@@ -49,8 +76,8 @@ For example, disable Roadroller:
 ```ts
 // vite.config.ts
 
-import { js13kViteConfig } from 'js13k-vite-plugins';
-import { defineConfig } from 'vite';
+import { js13kViteConfig } from "js13k-vite-plugins";
+import { defineConfig } from "vite";
 
 export default defineConfig(
   js13kViteConfig({
@@ -59,7 +86,7 @@ export default defineConfig(
 );
 ```
 
-### Override specific settings
+### Override Specific Settings
 
 Pass in options to configure specific plugins.
 
@@ -68,27 +95,32 @@ For example, change the Advzip shrink level to "fast" (from default "insane").
 ```ts
 // vite.config.ts
 
-import { js13kViteConfig } from 'js13k-vite-plugins';
-import { defineConfig } from 'vite';
+import { js13kViteConfig } from "js13k-vite-plugins";
+import { defineConfig } from "vite";
 
 export default defineConfig(
   js13kViteConfig({
     advzipOptions: {
-      shrinkLevel: 'fast',
+      shrinkLevel: "fast",
     },
   })
 );
 ```
 
-### Use plugins individually
+### Use Plugins Individually
 
 Use the individual plugins for more control over the build.
 
 ```ts
 // vite.config.ts
 
-import { advzipPlugin, ectPlugin, getDefaultViteBuildOptions, roadrollerPlugin } from 'js13k-vite-plugins';
-import { defineConfig } from 'vite';
+import {
+  advzipPlugin,
+  ectPlugin,
+  getDefaultViteBuildOptions,
+  roadrollerPlugin,
+} from "js13k-vite-plugins";
+import { defineConfig } from "vite";
 
 export default defineConfig({
   build: getDefaultViteBuildOptions(),
@@ -135,8 +167,8 @@ Default options:
  * @returns The recommended Vite build options.
  */
 export const defaultViteBuildOptions: BuildOptions = {
-  target: 'esnext',
-  minify: 'terser',
+  target: "esnext",
+  minify: "terser",
   cssCodeSplit: false,
   modulePreload: {
     polyfill: false, // Don't add vite polyfills
@@ -324,7 +356,17 @@ TypeScript interface:
 ```ts
 export interface AdvzipOptions {
   pedantic?: boolean;
-  shrinkLevel?: 0 | 1 | 2 | 3 | 4 | 'store' | 'fast' | 'normal' | 'extra' | 'insane';
+  shrinkLevel?:
+    | 0
+    | 1
+    | 2
+    | 3
+    | 4
+    | "store"
+    | "fast"
+    | "normal"
+    | "extra"
+    | "insane";
 }
 ```
 
@@ -332,7 +374,7 @@ Default options:
 
 ```ts
 export const defaultAdvzipOptions: AdvzipOptions = {
-  shrinkLevel: 'insane',
+  shrinkLevel: "insane",
 };
 ```
 
