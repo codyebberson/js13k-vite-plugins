@@ -1,7 +1,7 @@
 import advzip from 'advzip-bin';
-import { execFileSync } from 'child_process';
-import { statSync } from 'fs';
-import { Plugin } from 'vite';
+import { execFileSync } from 'node:child_process';
+import { statSync } from 'node:fs';
+import type { Plugin } from 'vite';
 import { addDefaultValues } from './utils';
 
 export interface AdvzipOptions {

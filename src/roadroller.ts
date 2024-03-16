@@ -1,15 +1,9 @@
-import CleanCSS from "clean-css";
-import htmlMinify, { Options as HtmlMinifyOptions } from "html-minifier-terser";
-import {
-  Input,
-  InputAction,
-  InputType,
-  Packer,
-  PackerOptions,
-} from "roadroller";
-import { OutputAsset, OutputChunk } from "rollup";
-import { IndexHtmlTransformContext, Plugin } from "vite";
-import { addDefaultValues, escapeRegExp } from "./utils";
+import CleanCSS from 'clean-css';
+import htmlMinify, { Options as HtmlMinifyOptions } from 'html-minifier-terser';
+import { Input, InputAction, InputType, Packer, PackerOptions } from 'roadroller';
+import { OutputAsset, OutputChunk } from 'rollup';
+import { IndexHtmlTransformContext, Plugin } from 'vite';
+import { addDefaultValues, escapeRegExp } from './utils';
 
 export type RoadrollerOptions = PackerOptions;
 
@@ -41,25 +35,13 @@ export const defaultHtmlMinifyOptions: HtmlMinifyOptions = {
  *
  * @returns The roadroller plugin.
  */
-export function roadrollerPlugin(
-  roadrollerOptions?: RoadrollerOptions,
-  htmlMinifyOptions?: HtmlMinifyOptions
-): Plugin {
-  const fullRoadrollerOptions = addDefaultValues(
-    roadrollerOptions,
-    defaultRoadrollerOptions
-  );
-  const fullHtmlMinifyOptions = addDefaultValues(
-    htmlMinifyOptions,
-    defaultHtmlMinifyOptions
-  );
+export function roadrollerPlugin(roadrollerOptions?: RoadrollerOptions, htmlMinifyOptions?: HtmlMinifyOptions): Plugin {
+  const fullRoadrollerOptions = addDefaultValues(roadrollerOptions, defaultRoadrollerOptions);
+  const fullHtmlMinifyOptions = addDefaultValues(htmlMinifyOptions, defaultHtmlMinifyOptions);
   return {
-    name: "vite:roadroller",
+    name: 'vite:roadroller',
     transformIndexHtml: {
-      handler: async (
-        html: string,
-        ctx?: IndexHtmlTransformContext
-      ): Promise<string> => {
+      handler: async (html: string, ctx?: IndexHtmlTransformContext): Promise<string> => {
         // Only use this plugin during build
         if (!ctx || !ctx.bundle) {
           return html;
@@ -69,7 +51,7 @@ export function roadrollerPlugin(
 
         const bundleKeys = Object.keys(ctx.bundle);
 
-        const cssKey = bundleKeys.find((key) => key.endsWith(".css"));
+        const cssKey = bundleKeys.find((key) => key.endsWith('.css'));
         if (cssKey) {
           result = embedCss(result, ctx.bundle[cssKey] as OutputAsset);
           delete ctx.bundle[cssKey];
@@ -77,13 +59,9 @@ export function roadrollerPlugin(
 
         result = await htmlMinify.minify(result, fullHtmlMinifyOptions);
 
-        const jsKey = bundleKeys.find((key) => key.endsWith(".js"));
+        const jsKey = bundleKeys.find((key) => key.endsWith('.js'));
         if (jsKey) {
-          result = await embedJs(
-            result,
-            ctx.bundle[jsKey] as OutputChunk,
-            fullRoadrollerOptions
-          );
+          result = await embedJs(result, ctx.bundle[jsKey] as OutputChunk, fullRoadrollerOptions);
           delete ctx.bundle[jsKey];
         }
 
@@ -99,21 +77,14 @@ export function roadrollerPlugin(
  * @param chunk The JavaScript output chunk from Rollup/Vite.
  * @returns The transformed HTML with the JavaScript embedded.
  */
-async function embedJs(
-  html: string,
-  chunk: OutputChunk,
-  options: RoadrollerOptions
-): Promise<string> {
-  const scriptTagRemoved = html.replace(
-    new RegExp(`<script[^>]*?${escapeRegExp(chunk.fileName)}[^>]*?></script>`),
-    ""
-  );
+async function embedJs(html: string, chunk: OutputChunk, options: RoadrollerOptions): Promise<string> {
+  const scriptTagRemoved = html.replace(new RegExp(`<script[^>]*?${escapeRegExp(chunk.fileName)}[^>]*?></script>`), '');
   const htmlInJs = `document.write('${scriptTagRemoved}');${chunk.code.trim()}`;
   const inputs: Input[] = [
     {
       data: htmlInJs,
-      type: "js" as InputType,
-      action: "eval" as InputAction,
+      type: 'js' as InputType,
+      action: 'eval' as InputAction,
     },
   ];
   const packer = new Packer(inputs, options);
@@ -129,11 +100,7 @@ async function embedJs(
  * @returns The transformed HTML with the CSS embedded.
  */
 function embedCss(html: string, asset: OutputAsset): string {
-  const reCSS = new RegExp(
-    `<link [^>]*?href="[./]*${escapeRegExp(asset.fileName)}"[^>]*?>`
-  );
-  const code = `<style>${
-    new CleanCSS({ level: 2 }).minify(asset.source as string).styles
-  }</style>`;
+  const reCSS = new RegExp(`<link [^>]*?href="[./]*${escapeRegExp(asset.fileName)}"[^>]*?>`);
+  const code = `<style>${new CleanCSS({ level: 2 }).minify(asset.source as string).styles}</style>`;
   return html.replace(reCSS, code);
 }

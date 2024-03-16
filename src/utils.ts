@@ -5,7 +5,7 @@
  */
 export function escapeRegExp(str: string): string {
   // https://stackoverflow.com/a/6969486/2051724
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 /**
@@ -15,10 +15,7 @@ export function escapeRegExp(str: string): string {
  * @param b The object to merge into the base object. This object will not be mutated. This would normally be default values.
  * @returns The merged object.
  */
-export function addDefaultValues<T extends Record<string, any>>(
-  a: T | undefined,
-  b: T
-): T {
+export function addDefaultValues<T extends Record<string, any>>(a: T | undefined, b: T): T {
   if (!a) {
     return b;
   }
@@ -33,5 +30,5 @@ export function addDefaultValues<T extends Record<string, any>>(
 }
 
 function isObject(item: unknown): boolean {
-  return !!item && typeof item === "object";
+  return !!item && typeof item === 'object';
 }

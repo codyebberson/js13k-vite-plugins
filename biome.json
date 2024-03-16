@@ -3,13 +3,32 @@
   "organizeImports": {
     "enabled": true
   },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
+      "style": {
+        "noParameterAssign": "off",
+        "useImportType": "off",
+        "useTemplate": "off"
+      },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noAssignInExpressions": "off",
+        "noExplicitAny": "off",
+        "noSparseArray": "off"
       }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "enabled": true,
+      "quoteStyle": "single"
     }
   }
 }

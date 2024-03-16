@@ -1,6 +1,6 @@
-import { execFileSync } from 'child_process';
+import { execFileSync } from 'node:child_process';
+import { statSync } from 'node:fs';
 import ect from 'ect-bin';
-import { statSync } from 'fs';
 import { glob } from 'glob';
 import { Plugin } from 'vite';
 import { addDefaultValues } from './utils';

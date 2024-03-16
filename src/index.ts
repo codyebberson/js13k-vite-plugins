@@ -1,11 +1,11 @@
-import { RollupOptions } from 'rollup';
-import { ECMA } from 'terser';
-import { BuildOptions, Terser, UserConfigExport } from 'vite';
-import { AdvzipOptions, advzipPlugin, defaultAdvzipOptions } from './advzip';
-import { EctOptions, defaultEctOptions, ectPlugin } from './ect';
+import type { RollupOptions } from 'rollup';
+import type { ECMA } from 'terser';
+import type { BuildOptions, Terser, UserConfigExport } from 'vite';
+import { type AdvzipOptions, advzipPlugin, defaultAdvzipOptions } from './advzip';
+import { type EctOptions, defaultEctOptions, ectPlugin } from './ect';
 import {
-  HtmlMinifyOptions,
-  RoadrollerOptions,
+  type HtmlMinifyOptions,
+  type RoadrollerOptions,
   defaultHtmlMinifyOptions,
   defaultRoadrollerOptions,
   roadrollerPlugin,
@@ -475,7 +475,7 @@ export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
         terserOptions: options?.terserOptions,
         rollupOptions: options?.rollupOptions,
       },
-      defaultViteBuildOptions
+      defaultViteBuildOptions,
     ),
     plugins,
   };
