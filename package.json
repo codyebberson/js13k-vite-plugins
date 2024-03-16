@@ -21,7 +21,8 @@
     "glob": "10.3.10",
     "html-minifier-terser": "7.2.0",
     "roadroller": "2.1.0",
-    "terser": "5.29.1"
+    "terser": "5.29.1",
+    "vite-plugin-imagemin": "0.6.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.6.0",

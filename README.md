@@ -7,6 +7,7 @@ Included tools:
 - [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vitejs.dev/) dev server
 - [Rollup](https://rollupjs.org/guide/en/) production build
+- [Imagemin](https://github.com/imagemin/imagemin) - image compression
 - [Roadroller](https://lifthrasiir.github.io/roadroller/) - best JS compressor
 - [Efficient Compression Tool](https://github.com/fhanau/Efficient-Compression-Tool) - best ZIP
 - [Advzip](https://github.com/amadvance/advancecomp) - post-processing ZIP compression
@@ -26,6 +27,7 @@ Example project: <https://github.com/codyebberson/js13k-starter>
   - [Terser Options](#terser-options)
   - [Rollup Options](#rollup-options)
   - [HTML Minify Options](#html-minify-options)
+  - [Imagemin Options](#imagemin-options)
   - [Roadroller Options](#roadroller-options)
   - [ECT Options](#ect-options)
   - [Advzip Options](#advzip-options)
@@ -290,6 +292,22 @@ export const defaultHtmlMinifyOptions: HtmlMinifyOptions = {
   sortAttributes: true,
 };
 ```
+
+### Imagemin Options
+
+Base package: [`imagemin`](https://www.npmjs.com/package/imagemin)
+
+| params   | type                                  | default | default                                                      |
+| -------- | ------------------------------------- | ------- | ------------------------------------------------------------ |
+| verbose  | `boolean`                             | `true`  | Whether to output the compressed result in the console       |
+| filter   | `RegExp or (file: string) => boolean` | -       | Specify which resources are not compressed                   |
+| disable  | `boolean`                             | `false` | Whether to disable                                           |
+| svgo     | `object` or `false`                   | -       | See [Options](https://github.com/svg/svgo/#what-it-can-do)   |
+| gifsicle | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-gifsicle) |
+| mozjpeg  | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-mozjpeg)  |
+| optipng  | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-optipng)  |
+| pngquant | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-pngquant) |
+| webp     | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-webp)     |
 
 ### Roadroller Options
 

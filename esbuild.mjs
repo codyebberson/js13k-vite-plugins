@@ -2,7 +2,7 @@
 /* eslint no-console: "off" */
 
 import esbuild from "esbuild";
-import { writeFileSync } from "fs";
+import { writeFileSync } from "node:fs";
 
 const options = {
   entryPoints: ["./src/index.ts"],
@@ -21,11 +21,14 @@ const options = {
     "ect-bin",
     "glob",
     "html-minifier-terser",
+    "imagemin",
+    "imagemin-*",
     "roadroller",
     "terser",
     "rollup",
     "typescript",
     "vite",
+    "vite-plugin-imagemin",
   ],
 };
 

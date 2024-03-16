@@ -1,7 +1,7 @@
-import { execFileSync } from 'node:child_process';
-import { statSync } from 'node:fs';
 import ect from 'ect-bin';
 import { glob } from 'glob';
+import { execFileSync } from 'node:child_process';
+import { statSync } from 'node:fs';
 import { Plugin } from 'vite';
 import { addDefaultValues } from './utils';
 
@@ -76,7 +76,9 @@ export function ectPlugin(options?: EctOptions): Plugin {
   const ectOptions = addDefaultValues(options, defaultEctOptions);
   return {
     name: 'vite:ect',
-    writeBundle: async (): Promise<void> => {
+    apply: 'build',
+    enforce: 'post',
+    closeBundle: async (): Promise<void> => {
       // List files in dist directory
       // Make sure the .html file is first
       const files = glob.sync('dist/**/*', { nodir: true }).sort((a) => (a.endsWith('.html') ? -1 : 1));

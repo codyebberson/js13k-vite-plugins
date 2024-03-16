@@ -1,16 +1,17 @@
 import type { RollupOptions } from 'rollup';
 import type { ECMA } from 'terser';
 import type { BuildOptions, Terser, UserConfigExport } from 'vite';
-import { type AdvzipOptions, advzipPlugin, defaultAdvzipOptions } from './advzip';
-import { type EctOptions, defaultEctOptions, ectPlugin } from './ect';
+import { advzipPlugin, defaultAdvzipOptions, type AdvzipOptions } from './advzip';
+import { defaultEctOptions, ectPlugin, type EctOptions } from './ect';
+import { ImageMinOptions, imageminPlugin } from './imagemin';
 import {
-  type HtmlMinifyOptions,
-  type RoadrollerOptions,
   defaultHtmlMinifyOptions,
   defaultRoadrollerOptions,
   roadrollerPlugin,
+  type HtmlMinifyOptions,
+  type RoadrollerOptions,
 } from './roadroller';
-import { addDefaultValues } from './utils';
+import { EnabledOptions, addDefaultValues } from './utils';
 
 export type { AdvzipOptions, EctOptions, HtmlMinifyOptions, RoadrollerOptions, RollupOptions };
 
@@ -29,9 +30,10 @@ export interface JS13KOptions {
   terserOptions?: Terser.MinifyOptions;
   rollupOptions?: RollupOptions;
   htmlMinifyOptions?: HtmlMinifyOptions;
-  roadrollerOptions?: RoadrollerOptions | false;
+  roadrollerOptions?: EnabledOptions<RoadrollerOptions>;
+  imageMinOptions?: EnabledOptions<ImageMinOptions>;
   ectOptions?: EctOptions;
-  advzipOptions?: AdvzipOptions | false;
+  advzipOptions?: EnabledOptions<AdvzipOptions>;
 }
 
 /**
@@ -448,7 +450,7 @@ export const defaultViteBuildOptions: BuildOptions = {
  * Features:
  * - Uses recommended Vite build options
  * - Uses recommended Terser build options
- * - Adds Google Closure Compiler plugin
+ * - Adds imagemin plugin
  * - Adds Roadroller plugin
  * - Adds ECT plugin
  * - Adds advzip plugin
@@ -457,6 +459,10 @@ export const defaultViteBuildOptions: BuildOptions = {
  */
 export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
   const plugins = [];
+
+  if (options?.imageMinOptions !== false) {
+    plugins.push(imageminPlugin(options?.imageMinOptions));
+  }
 
   if (options?.roadrollerOptions !== false) {
     plugins.push(roadrollerPlugin(options?.roadrollerOptions, options?.htmlMinifyOptions));

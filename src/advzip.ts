@@ -21,7 +21,9 @@ export function advzipPlugin(options?: AdvzipOptions): Plugin {
   const advzipOptions = addDefaultValues(options, defaultAdvzipOptions);
   return {
     name: 'vite:advzip',
-    writeBundle: async (): Promise<void> => {
+    apply: 'build',
+    enforce: 'post',
+    closeBundle: async (): Promise<void> => {
       try {
         const args = ['--recompress'];
         if (advzipOptions.pedantic) {
