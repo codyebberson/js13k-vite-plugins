@@ -2,7 +2,7 @@ import advzip from 'advzip-bin';
 import { execFileSync } from 'node:child_process';
 import { statSync } from 'node:fs';
 import type { Plugin } from 'vite';
-import { addDefaultValues } from './utils';
+import { addDefaultValues, printJs13kStats } from './utils';
 
 export interface AdvzipOptions {
   pedantic?: boolean;
@@ -40,7 +40,7 @@ export function advzipPlugin(options?: AdvzipOptions): Plugin {
         const result = execFileSync(advzip, args);
         console.log(result.toString().trim());
         const stats = statSync('dist/index.zip');
-        console.log('advzip ZIP size', stats.size);
+        printJs13kStats('advzip ZIP', stats.size);
       } catch (err) {
         console.log('advzip error', err);
       }

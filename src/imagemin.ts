@@ -1,5 +1,3 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import imagemin from 'imagemin';
 import imageminGif, { Options as GifsicleOptions } from 'imagemin-gifsicle';
 import imageminJpegTran, { Options as JpegtranOptions } from 'imagemin-jpegtran';
@@ -8,6 +6,8 @@ import imageminOptPng, { Options as OptipngOptions } from 'imagemin-optipng';
 import imageminPng, { Options as PngquantOptions } from 'imagemin-pngquant';
 import imageminSvgo, { Options as BaseSvgoOptions } from 'imagemin-svgo';
 import imageminWebp, { Options as WebpOptions } from 'imagemin-webp';
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { isBoolean, isFunction, isNotFalse, isRegExp, readAllFiles } from '../src/utils';
 import { EnabledOptions, addDefaultValues } from './utils';
@@ -187,43 +187,36 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
 
       await Promise.all(handles);
     },
-    async closeBundle() {
-      if (publicDir) {
-        const files: string[] = [];
+    async writeBundle() {
+      if (!publicDir) {
+        return;
+      }
 
-        // try to find any static images in original static folder
-        for (const file of readAllFiles(publicDir)) {
-          if (filterFile(file, filter)) {
-            files.push(file);
-          }
+      for (const file of readAllFiles(publicDir)) {
+        if (!filterFile(file, filter)) {
+          continue;
         }
 
-        if (files.length) {
-          const handles = files.map(async (publicFilePath: string) => {
-            // now convert the path to the output folder
-            publicDir = (path.resolve(publicDir) + path.sep).replaceAll('\\', '/');
-            publicFilePath = path.resolve(publicFilePath).replaceAll('\\', '/');
-            const filePath = publicFilePath.replace(publicDir, '');
-            const fullFilePath = path.resolve(outputPath, filePath).replaceAll('\\', '/');
-            if (fs.existsSync(fullFilePath) === false) {
-              return;
-            }
+        let publicFilePath = file;
+        publicDir = (path.resolve(publicDir) + path.sep).replaceAll('\\', '/');
+        publicFilePath = path.resolve(publicFilePath).replaceAll('\\', '/');
+        const filePath = publicFilePath.replace(publicDir, '');
+        const fullFilePath = path.resolve(outputPath, filePath).replaceAll('\\', '/');
+        if (fs.existsSync(fullFilePath) === false) {
+          return;
+        }
 
-            const { mtimeMs } = fs.statSync(fullFilePath);
-            if (mtimeMs <= (mtimeCache.get(filePath) || 0)) {
-              return;
-            }
+        const { mtimeMs } = fs.statSync(fullFilePath);
+        if (mtimeMs <= (mtimeCache.get(filePath) || 0)) {
+          return;
+        }
 
-            const buffer = fs.readFileSync(fullFilePath);
-            const content = await processFile(filePath, buffer);
+        const buffer = fs.readFileSync(fullFilePath);
+        const content = await processFile(filePath, buffer);
 
-            if (content) {
-              fs.writeFileSync(fullFilePath, content);
-              mtimeCache.set(filePath, Date.now());
-            }
-          });
-
-          await Promise.all(handles);
+        if (content) {
+          fs.writeFileSync(fullFilePath, content);
+          mtimeCache.set(filePath, Date.now());
         }
       }
 
@@ -295,49 +288,36 @@ function getImageminPlugins(options: ImageMinOptions = {}): imagemin.Plugin[] {
   const plugins: imagemin.Plugin[] = [];
 
   if (isNotFalse(gifsicle)) {
-    // debug('gifsicle:', true);
     const opt = isBoolean(gifsicle) ? undefined : gifsicle;
     plugins.push(imageminGif(opt));
   }
 
   if (isNotFalse(mozjpeg)) {
-    // debug('mozjpeg:', true);
     const opt = isBoolean(mozjpeg) ? undefined : mozjpeg;
     plugins.push(imageminJpeg(opt));
   }
 
   if (isNotFalse(pngquant)) {
-    // debug('pngquant:', true);
     const opt = isBoolean(pngquant) ? undefined : pngquant;
     plugins.push(imageminPng(opt));
   }
 
   if (isNotFalse(optipng)) {
-    // debug('optipng:', true);
     const opt = isBoolean(optipng) ? undefined : optipng;
     plugins.push(imageminOptPng(opt));
   }
 
   if (isNotFalse(svgo)) {
-    // debug('svgo:', true);
     const opt = isBoolean(svgo) ? undefined : svgo;
-
-    // if (opt !== null && isObject(opt) && Reflect.has(opt, 'plugins')) {
-    //   (opt as any).plugins.push({
-    //     name: 'preset-default',
-    //   });
-    // }
     plugins.push(imageminSvgo(opt));
   }
 
   if (isNotFalse(webp)) {
-    // debug('webp:', true);
     const opt = isBoolean(webp) ? undefined : webp;
     plugins.push(imageminWebp(opt));
   }
 
   if (isNotFalse(jpegTran)) {
-    // debug('webp:', true);
     const opt = isBoolean(jpegTran) ? undefined : jpegTran;
     plugins.push(imageminJpegTran(opt));
   }

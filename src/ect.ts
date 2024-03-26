@@ -3,7 +3,7 @@ import { glob } from 'glob';
 import { execFileSync } from 'node:child_process';
 import { statSync } from 'node:fs';
 import { Plugin } from 'vite';
-import { addDefaultValues } from './utils';
+import { addDefaultValues, printJs13kStats } from './utils';
 
 /**
  * Efficient Compression Tool (ECT) options.
@@ -104,7 +104,7 @@ export function ectPlugin(options?: EctOptions): Plugin {
         const result = execFileSync(ect, args);
         console.log('ECT result', result.toString().trim());
         const stats = statSync('dist/index.zip');
-        console.log('ECT ZIP size', stats.size);
+        printJs13kStats('ECT ZIP', stats.size);
       } catch (err) {
         console.log('ECT error', err);
       }

@@ -37,6 +37,11 @@ export function addDefaultValues<T extends Record<string, any>>(a: T | undefined
   return a;
 }
 
+export function printJs13kStats(prefix: string, size: number): void {
+  const percent = ((size / 13_312) * 100).toFixed(2);
+  console.log(`${prefix} size: ${size} bytes (${percent}% of 13 KB)`);
+}
+
 export function isObject(item: unknown): boolean {
   return !!item && typeof item === 'object';
 }
