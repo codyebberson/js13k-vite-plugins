@@ -1,6 +1,6 @@
 {
   "name": "js13k-vite-plugins",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "exports": {
     "types": "./dist/types/index.d.ts",
