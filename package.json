@@ -18,21 +18,21 @@
     "advzip-bin": "2.0.0",
     "clean-css": "5.3.3",
     "ect-bin": "1.4.1",
-    "glob": "10.3.10",
+    "glob": "10.3.12",
     "html-minifier-terser": "7.2.0",
     "roadroller": "2.1.0",
-    "terser": "5.29.2",
+    "terser": "5.31.0",
     "vite-plugin-imagemin": "0.6.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.6.3",
+    "@biomejs/biome": "1.7.2",
     "@types/clean-css": "4.2.11",
     "@types/glob": "8.1.0",
     "@types/html-minifier-terser": "7.0.2",
     "esbuild": "0.20.2",
-    "rollup": "4.13.0",
-    "typescript": "5.4.3",
-    "vite": "5.2.6"
+    "rollup": "4.17.2",
+    "typescript": "5.4.5",
+    "vite": "5.2.10"
   },
   "peerDependencies": {
     "terser": "^5.0.0",
