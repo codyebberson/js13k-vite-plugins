@@ -424,6 +424,8 @@ export const defaultAdvzipOptions: AdvzipOptions = {
 
 [Salvatore Previti](https://github.com/SalvatorePreviti) for Terser configuration recommendations
 
+[Andrzej Mazur](https://end3r.com/) for organizing js13k
+
 ## License
 
 MIT
