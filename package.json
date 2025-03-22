@@ -1,6 +1,6 @@
 {
   "name": "js13k-vite-plugins",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "type": "module",
   "exports": {
     "types": "./dist/types/index.d.ts",
@@ -36,6 +36,6 @@
   },
   "peerDependencies": {
     "terser": "^5.0.0",
-    "vite": "^5.0.0"
+    "vite": "^6.0.0"
   }
 }
