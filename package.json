@@ -11,7 +11,9 @@
   "module": "dist/esm/index.mjs",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build": "tsc && node esbuild.mjs"
+    "build": "tsc && node esbuild.mjs",
+    "fix": "biome check --write --unsafe .",
+    "lint": "biome check ."
   },
   "dependencies": {
     "@rollup/plugin-typescript": "12.1.2",

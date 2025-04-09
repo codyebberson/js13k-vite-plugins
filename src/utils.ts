@@ -71,7 +71,7 @@ export function isRegExp(arg: unknown): arg is RegExp {
  * [@param] reg Regular expression for filtering files, optional parameters
  * Note: It can also be deformed to check whether the file path conforms to regular rules. The path can be a folder or a file. The path that does not exist is also fault-tolerant.
  */
-export function readAllFiles(root: string, reg?: RegExp) {
+export function readAllFiles(root: string, reg?: RegExp): string[] {
   let resultArr: string[] = [];
   try {
     if (fs.existsSync(root)) {

@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import imagemin from 'imagemin';
 import imageminGif, { Options as GifsicleOptions } from 'imagemin-gifsicle';
 import imageminJpegTran, { Options as JpegtranOptions } from 'imagemin-jpegtran';
@@ -6,8 +8,6 @@ import imageminOptPng, { Options as OptipngOptions } from 'imagemin-optipng';
 import imageminPng, { Options as PngquantOptions } from 'imagemin-pngquant';
 import imageminSvgo, { Options as BaseSvgoOptions } from 'imagemin-svgo';
 import imageminWebp, { Options as WebpOptions } from 'imagemin-webp';
-import fs from 'node:fs';
-import path from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { isBoolean, isFunction, isNotFalse, isRegExp, readAllFiles } from '../src/utils';
 import { EnabledOptions, addDefaultValues } from './utils';
@@ -156,7 +156,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
     name: 'vite:imagemin',
     apply: 'build',
     enforce: 'post',
-    configResolved(resolvedConfig) {
+    configResolved(resolvedConfig): void {
       config = resolvedConfig;
       outputPath = config.build.outDir;
 
@@ -165,7 +165,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
         publicDir = config.publicDir;
       }
     },
-    async generateBundle(_, bundler) {
+    async generateBundle(_, bundler): Promise<void> {
       tinyMap = new Map();
       const files: string[] = [];
       for (const key of Object.keys(bundler)) {
@@ -187,7 +187,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
 
       await Promise.all(handles);
     },
-    async writeBundle() {
+    async writeBundle(): Promise<void> {
       if (!publicDir) {
         return;
       }
@@ -231,7 +231,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
 function handleOutputLogger(
   config: ResolvedConfig,
   recordMap: Map<string, { size: number; oldSize: number; ratio: number }>,
-) {
+): void {
   const keyLengths = Array.from(recordMap.keys(), (name) => name.length);
   const valueLengths = Array.from(recordMap.values(), (value) => `${Math.floor(100 * value.ratio)}`.length);
 
@@ -259,7 +259,7 @@ function handleOutputLogger(
   });
 }
 
-function filterFile(file: string, filter: RegExp | ((file: string) => boolean)) {
+function filterFile(file: string, filter: RegExp | ((file: string) => boolean)): boolean {
   if (filter) {
     const isRe = isRegExp(filter);
     const isFn = isFunction(filter);

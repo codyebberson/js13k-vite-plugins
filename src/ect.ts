@@ -1,7 +1,7 @@
-import ect from 'ect-bin';
-import { glob } from 'glob';
 import { execFileSync } from 'node:child_process';
 import { statSync } from 'node:fs';
+import ect from 'ect-bin';
+import { glob } from 'glob';
 import { Plugin } from 'vite';
 import { addDefaultValues, printJs13kStats } from './utils';
 

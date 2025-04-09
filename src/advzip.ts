@@ -1,6 +1,6 @@
-import advzip from 'advzip-bin';
 import { execFileSync } from 'node:child_process';
 import { statSync } from 'node:fs';
+import advzip from 'advzip-bin';
 import type { Plugin } from 'vite';
 import { addDefaultValues, printJs13kStats } from './utils';
 
