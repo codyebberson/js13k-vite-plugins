@@ -8,9 +8,10 @@ import imageminOptPng, { Options as OptipngOptions } from 'imagemin-optipng';
 import imageminPng, { Options as PngquantOptions } from 'imagemin-pngquant';
 import imageminSvgo, { Options as BaseSvgoOptions } from 'imagemin-svgo';
 import imageminWebp, { Options as WebpOptions } from 'imagemin-webp';
+import type { NormalizedOutputOptions, OutputBundle } from 'rollup';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { isBoolean, isFunction, isNotFalse, isRegExp, readAllFiles } from '../src/utils';
-import { EnabledOptions, addDefaultValues } from './utils';
+import { addDefaultValues, EnabledOptions } from './utils';
 
 // Vite plugin for imagemin compression
 // Fixes Windows path bugs in original code
@@ -146,7 +147,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
       });
 
       return content;
-    } catch (error) {
+    } catch (_error) {
       config.logger.error('imagemin error:' + filePath);
       return undefined;
     }
@@ -156,7 +157,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
     name: 'vite:imagemin',
     apply: 'build',
     enforce: 'post',
-    configResolved(resolvedConfig): void {
+    configResolved(resolvedConfig: ResolvedConfig): void {
       config = resolvedConfig;
       outputPath = config.build.outDir;
 
@@ -165,7 +166,7 @@ export function imageminPlugin(options?: ImageMinOptions): Plugin {
         publicDir = config.publicDir;
       }
     },
-    async generateBundle(_, bundler): Promise<void> {
+    async generateBundle(_: NormalizedOutputOptions, bundler: OutputBundle): Promise<void> {
       tinyMap = new Map();
       const files: string[] = [];
       for (const key of Object.keys(bundler)) {

@@ -2,16 +2,16 @@ import { RollupOptions } from 'rollup';
 import { ECMA } from 'terser';
 import { BuildOptions, Terser, UserConfigExport } from 'vite';
 import { AdvzipOptions, advzipPlugin, defaultAdvzipOptions } from './advzip';
-import { EctOptions, defaultEctOptions, ectPlugin } from './ect';
+import { defaultEctOptions, EctOptions, ectPlugin } from './ect';
 import { ImageMinOptions, imageminPlugin } from './imagemin';
 import {
-  HtmlMinifyOptions,
-  RoadrollerOptions,
   defaultHtmlMinifyOptions,
   defaultRoadrollerOptions,
+  HtmlMinifyOptions,
+  RoadrollerOptions,
   roadrollerPlugin,
 } from './roadroller';
-import { EnabledOptions, addDefaultValues } from './utils';
+import { addDefaultValues, EnabledOptions } from './utils';
 
 export type { AdvzipOptions, EctOptions, HtmlMinifyOptions, RoadrollerOptions, RollupOptions };
 
