@@ -11,9 +11,10 @@ import {
   RoadrollerOptions,
   roadrollerPlugin,
 } from './roadroller';
+import { defaultShaderMinifierOptions, ShaderMinifierOptions, shaderMinifierPlugin } from './shader-minifier';
 import { addDefaultValues, EnabledOptions } from './utils';
 
-export type { AdvzipOptions, EctOptions, HtmlMinifyOptions, RoadrollerOptions, RollupOptions };
+export type { AdvzipOptions, EctOptions, HtmlMinifyOptions, RoadrollerOptions, RollupOptions, ShaderMinifierOptions };
 
 export {
   advzipPlugin,
@@ -21,8 +22,10 @@ export {
   defaultEctOptions,
   defaultHtmlMinifyOptions,
   defaultRoadrollerOptions,
+  defaultShaderMinifierOptions,
   ectPlugin,
   roadrollerPlugin,
+  shaderMinifierPlugin,
 };
 
 export interface JS13KOptions {
@@ -32,6 +35,7 @@ export interface JS13KOptions {
   htmlMinifyOptions?: HtmlMinifyOptions;
   roadrollerOptions?: EnabledOptions<RoadrollerOptions>;
   imageMinOptions?: EnabledOptions<ImageMinOptions>;
+  shaderMinifierOptions?: EnabledOptions<ShaderMinifierOptions>;
   ectOptions?: EctOptions;
   advzipOptions?: EnabledOptions<AdvzipOptions>;
 }
@@ -462,6 +466,10 @@ export function js13kViteConfig(options?: JS13KOptions): UserConfigExport {
 
   if (options?.imageMinOptions !== false) {
     plugins.push(imageminPlugin(options?.imageMinOptions));
+  }
+
+  if (options?.shaderMinifierOptions !== false) {
+    plugins.push(shaderMinifierPlugin(options?.shaderMinifierOptions));
   }
 
   if (options?.roadrollerOptions !== false) {

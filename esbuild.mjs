@@ -24,6 +24,7 @@ const options = {
     'imagemin',
     'imagemin-*',
     'roadroller',
+    'shader-minifier-wasm',
     'terser',
     'rollup',
     'typescript',

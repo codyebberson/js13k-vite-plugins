@@ -33,6 +33,6 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/.turbo", "!**/dist", "!**/node_modules"]
+    "includes": ["**", "!**/dist", "!**/node_modules"]
   }
 }
