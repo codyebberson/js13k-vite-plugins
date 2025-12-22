@@ -1,9 +1,12 @@
-import { execFileSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { statSync } from 'node:fs';
+import { promisify } from 'node:util';
 import ect from 'ect-bin';
 import { glob } from 'glob';
-import { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { addDefaultValues, printJs13kStats } from './utils';
+
+const execFileAsync: typeof execFile.__promisify__ = promisify(execFile);
 
 /**
  * Efficient Compression Tool (ECT) options.
@@ -74,16 +77,24 @@ export const defaultEctOptions: EctOptions = {
  */
 export function ectPlugin(options?: EctOptions): Plugin {
   const ectOptions = addDefaultValues(options, defaultEctOptions);
+  let outDir = 'dist'; // fallback default
+
   return {
-    name: 'vite:ect',
+    name: 'js13k:ect',
     apply: 'build',
     enforce: 'post',
+
+    configResolved(config: ResolvedConfig): void {
+      outDir = config.build.outDir;
+    },
+
     closeBundle: async (): Promise<void> => {
-      // List files in dist directory
+      // List files in output directory
       // Make sure the .html file is first
-      const files = glob.sync('dist/**/*', { nodir: true }).sort((a) => (a.endsWith('.html') ? -1 : 1));
+      const files = glob.sync(`${outDir}/**/*`, { nodir: true }).sort((a) => (a.endsWith('.html') ? -1 : 1));
+
       try {
-        const args = [];
+        const args: string[] = [];
         if (ectOptions.quiet) {
           args.push('-quiet');
         }
@@ -101,12 +112,17 @@ export function ectPlugin(options?: EctOptions): Plugin {
         }
         args.push('-zip');
         args.push(...files);
-        const result = execFileSync(ect, args);
-        console.log('ECT result', result.toString().trim());
-        const stats = statSync('dist/index.zip');
+
+        const { stdout } = await execFileAsync(ect, args);
+        console.log('ECT result:', stdout.trim());
+
+        const zipPath = `${outDir}/index.zip`;
+        const stats = statSync(zipPath);
         printJs13kStats('ECT ZIP', stats.size);
       } catch (err) {
-        console.log('ECT error', err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error('ECT compression failed:', errorMessage);
+        throw new Error(`ECT compression failed: ${errorMessage}`);
       }
     },
   };

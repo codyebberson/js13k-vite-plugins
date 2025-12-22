@@ -1,8 +1,11 @@
-import { execFileSync } from 'node:child_process';
-import { statSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { existsSync, statSync } from 'node:fs';
+import { promisify } from 'node:util';
 import advzip from 'advzip-bin';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { addDefaultValues, printJs13kStats } from './utils';
+
+const execFileAsync: typeof execFile.__promisify__ = promisify(execFile);
 
 export interface AdvzipOptions {
   pedantic?: boolean;
@@ -19,31 +22,53 @@ export const defaultAdvzipOptions: AdvzipOptions = {
  */
 export function advzipPlugin(options?: AdvzipOptions): Plugin {
   const advzipOptions = addDefaultValues(options, defaultAdvzipOptions);
+  let outDir = 'dist'; // fallback default
+
   return {
-    name: 'vite:advzip',
+    name: 'js13k:advzip',
     apply: 'build',
     enforce: 'post',
-    closeBundle: async (): Promise<void> => {
-      try {
-        const args = ['--recompress'];
-        if (advzipOptions.pedantic) {
-          args.push('--pedantic');
+
+    configResolved(config: ResolvedConfig): void {
+      outDir = config.build.outDir;
+    },
+
+    closeBundle: {
+      order: 'post', // Run after other closeBundle hooks (including ECT)
+      sequential: true,
+      async handler(): Promise<void> {
+        const zipPath = `${outDir}/index.zip`;
+
+        // Verify ECT ran first and created the zip file
+        if (!existsSync(zipPath)) {
+          throw new Error('advzip requires ECT plugin to run first - no index.zip found');
         }
-        if (advzipOptions.shrinkLevel !== undefined) {
-          if (typeof advzipOptions.shrinkLevel === 'number') {
-            args.push(`-${advzipOptions.shrinkLevel}`);
-          } else {
-            args.push(`--shrink-${advzipOptions.shrinkLevel}`);
+
+        try {
+          const args: string[] = ['--recompress'];
+          if (advzipOptions.pedantic) {
+            args.push('--pedantic');
           }
+          if (advzipOptions.shrinkLevel !== undefined) {
+            if (typeof advzipOptions.shrinkLevel === 'number') {
+              args.push(`-${advzipOptions.shrinkLevel}`);
+            } else {
+              args.push(`--shrink-${advzipOptions.shrinkLevel}`);
+            }
+          }
+          args.push(zipPath);
+
+          const { stdout } = await execFileAsync(advzip, args);
+          console.log(stdout.trim());
+
+          const stats = statSync(zipPath);
+          printJs13kStats('advzip ZIP', stats.size);
+        } catch (err) {
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          console.error('advzip compression failed:', errorMessage);
+          throw new Error(`advzip compression failed: ${errorMessage}`);
         }
-        args.push('dist/index.zip');
-        const result = execFileSync(advzip, args);
-        console.log(result.toString().trim());
-        const stats = statSync('dist/index.zip');
-        printJs13kStats('advzip ZIP', stats.size);
-      } catch (err) {
-        console.log('advzip error', err);
-      }
+      },
     },
   };
 }

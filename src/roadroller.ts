@@ -1,8 +1,8 @@
 import CleanCSS from 'clean-css';
 import htmlMinify, { Options as HtmlMinifyOptions } from 'html-minifier-terser';
 import { Input, InputAction, InputType, Packer, PackerOptions } from 'roadroller';
-import { OutputAsset, OutputChunk } from 'rollup';
-import { IndexHtmlTransformContext, Plugin } from 'vite';
+import { NormalizedOutputOptions, OutputAsset, OutputBundle, OutputChunk } from 'rollup';
+import type { Plugin } from 'vite';
 import { addDefaultValues, escapeRegExp } from './utils';
 
 export type RoadrollerOptions = PackerOptions;
@@ -38,31 +38,43 @@ export const defaultHtmlMinifyOptions: HtmlMinifyOptions = {
 export function roadrollerPlugin(roadrollerOptions?: RoadrollerOptions, htmlMinifyOptions?: HtmlMinifyOptions): Plugin {
   const fullRoadrollerOptions = addDefaultValues(roadrollerOptions, defaultRoadrollerOptions);
   const fullHtmlMinifyOptions = addDefaultValues(htmlMinifyOptions, defaultHtmlMinifyOptions);
-  return {
-    name: 'vite:roadroller',
-    transformIndexHtml: {
-      handler: async (html: string, ctx?: IndexHtmlTransformContext): Promise<string> => {
-        // Only use this plugin during build
-        if (!ctx || !ctx.bundle) {
-          return html;
-        }
 
+  // Store assets captured from the bundle
+  let cssAsset: OutputAsset | undefined;
+  let jsChunk: OutputChunk | undefined;
+
+  return {
+    name: 'js13k:roadroller',
+    apply: 'build',
+
+    // Remove CSS and JS from bundle before writing to disk
+    generateBundle(_options: NormalizedOutputOptions, bundle: OutputBundle): void {
+      const cssKey = Object.keys(bundle).find((key) => key.endsWith('.css'));
+      if (cssKey) {
+        cssAsset = bundle[cssKey] as OutputAsset;
+        delete bundle[cssKey];
+      }
+
+      const jsKey = Object.keys(bundle).find((key) => key.endsWith('.js'));
+      if (jsKey) {
+        jsChunk = bundle[jsKey] as OutputChunk;
+        delete bundle[jsKey];
+      }
+    },
+
+    transformIndexHtml: {
+      order: 'post',
+      handler: async (html: string): Promise<string> => {
         let result = html;
 
-        const bundleKeys = Object.keys(ctx.bundle);
-
-        const cssKey = bundleKeys.find((key) => key.endsWith('.css'));
-        if (cssKey) {
-          result = embedCss(result, ctx.bundle[cssKey] as OutputAsset);
-          delete ctx.bundle[cssKey];
+        if (cssAsset) {
+          result = embedCss(result, cssAsset);
         }
 
         result = await htmlMinify.minify(result, fullHtmlMinifyOptions);
 
-        const jsKey = bundleKeys.find((key) => key.endsWith('.js'));
-        if (jsKey) {
-          result = await embedJs(result, ctx.bundle[jsKey] as OutputChunk, fullRoadrollerOptions);
-          delete ctx.bundle[jsKey];
+        if (jsChunk) {
+          result = await embedJs(result, jsChunk, fullRoadrollerOptions);
         }
 
         return result;
