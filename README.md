@@ -8,6 +8,7 @@ Included tools:
 - [Vite](https://vitejs.dev/) dev server
 - [Rollup](https://rollupjs.org/guide/en/) production build
 - [Imagemin](https://github.com/imagemin/imagemin) - image compression
+- [Shader Minifier](https://github.com/laurentlb/shader-minifier) - GLSL shader minification
 - [Roadroller](https://lifthrasiir.github.io/roadroller/) - best JS compressor
 - [Efficient Compression Tool](https://github.com/fhanau/Efficient-Compression-Tool) - best ZIP
 - [Advzip](https://github.com/amadvance/advancecomp) - post-processing ZIP compression
@@ -28,6 +29,7 @@ Example project: <https://github.com/codyebberson/js13k-starter>
   - [Rollup Options](#rollup-options)
   - [HTML Minify Options](#html-minify-options)
   - [Imagemin Options](#imagemin-options)
+  - [Shader Minifier Options](#shader-minifier-options)
   - [Roadroller Options](#roadroller-options)
   - [ECT Options](#ect-options)
   - [Advzip Options](#advzip-options)
@@ -90,6 +92,8 @@ export default defineConfig(js13kViteConfig());
 
 Some plugins can be disabled individually by passing `false` for the options.
 
+- Disable Imagemin by passing `imageMinOptions: false`
+- Disable Shader Minifier by passing `shaderMinifierOptions: false`
 - Disable Roadroller by passing `roadrollerOptions: false`
 - Disable Advzip by passing `advzipOptions: false`
 
@@ -140,13 +144,21 @@ import {
   advzipPlugin,
   ectPlugin,
   getDefaultViteBuildOptions,
+  imageminPlugin,
   roadrollerPlugin,
+  shaderMinifierPlugin,
 } from "js13k-vite-plugins";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   build: getDefaultViteBuildOptions(),
-  plugins: [roadrollerPlugin(), ectPlugin(), advzipPlugin()],
+  plugins: [
+    imageminPlugin(),
+    shaderMinifierPlugin(),
+    roadrollerPlugin(),
+    ectPlugin(),
+    advzipPlugin(),
+  ],
 });
 ```
 
@@ -160,6 +172,8 @@ export interface JS13KOptions {
   terserOptions?: Terser.MinifyOptions;
   rollupOptions?: RollupOptions;
   htmlMinifyOptions?: HtmlMinifyOptions;
+  imageMinOptions?: ImageMinOptions;
+  shaderMinifierOptions?: ShaderMinifierOptions;
   roadrollerOptions?: RoadrollerOptions;
   ectOptions?: EctOptions;
   advzipOptions?: AdvzipOptions;
@@ -308,6 +322,76 @@ Base package: [`imagemin`](https://www.npmjs.com/package/imagemin)
 | optipng  | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-optipng)  |
 | pngquant | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-pngquant) |
 | webp     | `object` or `false`                   | -       | See [Options](https://github.com/imagemin/imagemin-webp)     |
+
+### Shader Minifier Options
+
+Base package: [`shader-minifier-wasm`](https://www.npmjs.com/package/shader-minifier-wasm)
+
+Full Shader Minifier documentation: <https://github.com/laurentlb/shader-minifier>
+
+This plugin processes GLSL shader files (`.vert`, `.frag`, `.glsl`), minifies them using shader-minifier, and generates a TypeScript file with named exports.
+
+TypeScript interface:
+
+```ts
+export interface ShaderMinifierOptions {
+  /**
+   * Path where the generated TypeScript file will be written (e.g., './src/shaders.ts')
+   */
+  outputFile: string;
+
+  /**
+   * Directory to scan for shader files (default: './src/shaders')
+   */
+  shaderDir?: string;
+
+  /**
+   * File extensions to recognize as shaders (default: ['.vert', '.frag', '.glsl'])
+   */
+  extensions?: string[];
+
+  /**
+   * shader-minifier-wasm options
+   * @see https://github.com/laurentlb/shader-minifier#usage
+   */
+  minifierOptions?: ShaderMinifierWasmOptions;
+
+  /**
+   * Show verbose output
+   */
+  verbose?: boolean;
+}
+```
+
+Default options:
+
+```ts
+export const defaultShaderMinifierOptions: ShaderMinifierOptions = {
+  outputFile: './src/shaders.ts',
+  shaderDir: './src/shaders',
+  extensions: ['.vert', '.frag', '.glsl'],
+  minifierOptions: {
+    format: 'js',
+    preserveExternals: false,
+  },
+  verbose: true,
+};
+```
+
+Example usage:
+
+```ts
+// Place your shader files in ./src/shaders/
+// - main.vert
+// - particle.frag
+
+// The plugin generates ./src/shaders.ts with:
+// export const MAIN_VERT = '...minified shader...';
+// export const PARTICLE_FRAG = '...minified shader...';
+
+// Import in your code:
+import { MAIN_VERT, PARTICLE_FRAG } from './shaders';
+```
 
 ### Roadroller Options
 
